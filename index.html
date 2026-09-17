@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MIZAN-MOJO P2P — Model 0.1</title>
+<meta name="theme-color" content="#1e3a5f">
+<style>
+
+:root{
+  --navy:#173554;
+  --navy-2:#0f2740;
+  --teal:#0d7a72;
+  --teal-2:#0a665f;
+  --gold:#d6a449;
+  --gold-soft:#fff7e7;
+  --ink:#162234;
+  --muted:#6b7788;
+  --line:#e5eaf0;
+  --surface:#ffffff;
+  --surface-2:#f7f9fc;
+  --page:#edf2f7;
+  --danger:#c94f52;
+  --warning:#b97918;
+  --success:#17845f;
+  --info:#356ca8;
+  --shadow:0 24px 70px rgba(17,39,65,.12);
+  --shadow-soft:0 8px 24px rgba(17,39,65,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Inter,"Plus Jakarta Sans","Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif
+}
+body{
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 6% 0%,rgba(13,122,114,.10),transparent 24rem),
+    radial-gradient(circle at 96% 92%,rgba(23,53,84,.09),transparent 26rem),
+    linear-gradient(180deg,#f5f8fb 0%,var(--page) 100%);
+}
+#root{min-height:100vh;padding:28px 18px 44px}
+.app{
+  width:min(900px,100%);
+  margin:0 auto;
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(211,220,230,.88);
+  border-radius:26px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  backdrop-filter:blur(12px);
+}
+.head{
+  position:relative;
+  overflow:hidden;
+  color:#fff;
+  padding:28px 30px 24px;
+  background:
+    radial-gradient(circle at 88% -20%,rgba(214,164,73,.28),transparent 36%),
+    radial-gradient(circle at 12% 115%,rgba(34,211,190,.20),transparent 38%),
+    linear-gradient(135deg,var(--navy-2) 0%,var(--navy) 48%,var(--teal-2) 100%);
+}
+.head:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.24;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:30px 30px;
+  mask-image:linear-gradient(to bottom,#000,transparent 90%);
+}
+.brand,.title,.sub,.track,.step{position:relative;z-index:1}
+.brand{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  width:max-content;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.7px;
+  text-transform:uppercase;
+  color:#d9f5f0;
+  opacity:.95;
+  margin-bottom:9px
+}
+.brand:before{
+  content:"M";
+  width:28px;height:28px;
+  display:inline-grid;place-items:center;
+  border-radius:9px;
+  color:#153653;
+  background:linear-gradient(145deg,#f4d28d,#d6a449);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.38),0 6px 15px rgba(0,0,0,.14);
+  font-size:12px;
+  letter-spacing:0;
+  font-weight:900;
+}
+.title{
+  font-size:clamp(22px,3.2vw,31px);
+  line-height:1.16;
+  font-weight:850;
+  letter-spacing:-.65px;
+  max-width:700px
+}
+.sub{
+  max-width:640px;
+  font-size:13px;
+  line-height:1.55;
+  color:rgba(255,255,255,.75);
+  margin-top:8px
+}
+.track{
+  margin-top:20px;
+  height:7px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.08)
+}
+.fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#36d6bc 0%,#88e0c8 55%,#f1c66c 100%);
+  box-shadow:0 0 18px rgba(54,214,188,.38);
+  transition:width .28s ease
+}
+.step{
+  margin-top:7px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.5px;
+  color:rgba(255,255,255,.62)
+}
+.topnav{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  margin:14px 18px 0;
+  border:1px solid var(--line);
+  background:#f8fafc;
+  border-radius:14px;
+  position:sticky;
+  top:10px;
+  z-index:20;
+  box-shadow:0 4px 16px rgba(25,48,74,.05)
+}
+.tab{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:#6d7886;
+  border-radius:10px;
+  padding:11px 14px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer
+}
+.tab.active{
+  color:#fff;
+  background:linear-gradient(135deg,var(--navy),var(--teal));
+  box-shadow:0 7px 16px rgba(23,53,84,.16)
+}
+.body{padding:24px 28px 28px}
+button,select{font:inherit}
+button{
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease,color .16s ease
+}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button:focus-visible,select:focus{
+  outline:3px solid rgba(13,122,114,.18);
+  outline-offset:2px
+}
+select{
+  color:var(--ink);
+  background:#fff;
+  box-shadow:0 4px 14px rgba(23,53,84,.05)
+}
+.section-title{
+  font-size:18px!important;
+  line-height:1.25;
+  letter-spacing:-.25px;
+  margin:0 0 5px!important
+}
+.section-help{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:15px
+}
+.note{
+  position:relative;
+  border-radius:14px;
+  padding:14px 15px;
+  font-size:12px;
+  line-height:1.62;
+  border:1px solid var(--line);
+  box-shadow:0 6px 16px rgba(23,53,84,.035)
+}
+.note+ .note{margin-top:10px}
+.note strong{font-weight:850}
+.note-blue{background:#f4f8fd;border-color:#d8e6f4}
+.note-green{background:#f3fbf8;border-color:#d0eee5}
+.note-amber{background:#fffaf0;border-color:#f1deb6}
+.card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow-soft)
+}
+.card:hover{border-color:#d6dee7}
+.card.core{
+  border:1px solid #efd18f;
+  background:linear-gradient(180deg,#fffdf8 0%,#fff 100%);
+  box-shadow:0 8px 24px rgba(173,127,39,.07)
+}
+.card.support{
+  border:1px solid #f1dfb8;
+  background:#fffdf8
+}
+.row,.pillline{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:10px
+}
+.btn-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
+}
+.choice,.rbtn{
+  flex:1;
+  min-width:120px;
+  cursor:pointer;
+  border-radius:12px;
+  color:#455266;
+  background:#f8fafc;
+  border:1px solid #dce3eb;
+  box-shadow:0 2px 6px rgba(23,53,84,.025)
+}
+.choice{
+  padding:12px 10px;
+  font-size:11px;
+  line-height:1.42
+}
+.choice>div:first-child{
+  width:27px;height:27px;
+  margin:0 auto 6px;
+  display:grid;place-items:center;
+  border-radius:8px;
+  background:#eef2f6;
+  color:#556274
+}
+.rbtn{
+  padding:11px 9px;
+  font-size:10.5px;
+  line-height:1.35;
+  font-weight:650
+}
+.rbtn>div:first-child{font-size:12px;margin-bottom:2px}
+.b0.on,.r0.on,.e0.on{
+  color:#8e3337;
+  background:#fff4f4;
+  border-color:#df999c;
+  box-shadow:0 0 0 3px rgba(201,79,82,.08)
+}
+.b1.on,.r1.on,.e1.on{
+  color:#86580f;
+  background:#fff9ed;
+  border-color:#dfba77;
+  box-shadow:0 0 0 3px rgba(185,121,24,.08)
+}
+.b2.on,.r2.on,.e2.on{
+  color:#0f6f50;
+  background:#eefaf5;
+  border-color:#83c9b1;
+  box-shadow:0 0 0 3px rgba(23,132,95,.08)
+}
+.td.on{
+  color:#38475b;
+  background:#eff3f7;
+  border-color:#9cabbc;
+  box-shadow:0 0 0 3px rgba(84,101,121,.08)
+}
+.b0.on>div:first-child,.r0.on>div:first-child,.e0.on>div:first-child{background:#f5dfe0;color:#96383d}
+.b1.on>div:first-child,.r1.on>div:first-child,.e1.on>div:first-child{background:#fae8c3;color:#8b5b10}
+.b2.on>div:first-child,.r2.on>div:first-child,.e2.on>div:first-child{background:#d7f0e6;color:#0f7352}
+.label{
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:8.5px;
+  font-weight:850;
+  letter-spacing:.25px;
+  margin-left:2px
+}
+.label-core{background:#fff3d9;color:#8e6117;border:1px solid #efd18f}
+.label-support{background:#fff6e9;color:#9a5a16;border:1px solid #f2cf99}
+.label-U{background:#edf4fb;color:#315c8a;border:1px solid #cbdff1}
+.summary{
+  margin-top:6px;
+  padding:12px 14px;
+  text-align:center;
+  border:1px dashed #d8e0e8;
+  border-radius:12px;
+  background:#f8fafc;
+  color:#667386;
+  font-size:12px
+}
+.grid2,.grid3{display:grid;gap:12px;margin-bottom:16px}
+.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.metric{
+  position:relative;
+  text-align:left;
+  min-height:132px;
+  padding:15px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#fff 0%,#fafbfd 100%);
+  box-shadow:var(--shadow-soft)
+}
+.metric:after{
+  content:"";
+  position:absolute;
+  left:15px;right:15px;bottom:0;
+  height:3px;border-radius:3px 3px 0 0;
+  background:linear-gradient(90deg,var(--navy),var(--teal),var(--gold));
+  opacity:.7
+}
+.metric-label{
+  font-size:9px;
+  font-weight:850;
+  color:#7a8797;
+  letter-spacing:.8px;
+  text-transform:uppercase
+}
+.metric-val{
+  font-size:30px;
+  line-height:1;
+  font-weight:880;
+  letter-spacing:-1px;
+  margin:12px 0 8px
+}
+.small{font-size:11px;line-height:1.5;color:#667386}
+.muted{color:var(--muted)}
+.result{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  padding:22px 20px;
+  margin-bottom:16px
+}
+.result:after{
+  content:"";
+  position:absolute;
+  width:160px;height:160px;
+  border-radius:50%;
+  right:-70px;top:-85px;
+  border:24px solid rgba(255,255,255,.30)
+}
+.result-icon{
+  position:relative;z-index:1;
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  margin:0 auto 8px;
+  border-radius:13px;
+  background:rgba(255,255,255,.72);
+  box-shadow:0 5px 12px rgba(23,53,84,.08);
+  font-size:22px
+}
+.result-name{
+  position:relative;z-index:1;
+  text-align:center;
+  font-size:20px;
+  font-weight:880;
+  letter-spacing:-.35px
+}
+.result-text{
+  position:relative;z-index:1;
+  max-width:580px;
+  margin:7px auto 0;
+  text-align:center;
+  font-size:12px;
+  line-height:1.55;
+  color:#4d596a
+}
+.bar-bg{
+  height:7px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#edf1f5
+}
+.bar{height:100%;border-radius:999px}
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:24px;
+  padding-top:4px
+}
+.action{
+  padding:13px 15px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:850;
+  cursor:pointer
+}
+.back,.repeat{
+  flex:1;
+  border:1px solid #d8e0e8;
+  color:#526073;
+  background:#fff
+}
+.back:hover,.repeat:hover{background:#f7f9fb;border-color:#cbd5df}
+.next{
+  flex:2;
+  border:none;
+  color:#fff;
+  background:linear-gradient(135deg,var(--navy),var(--teal));
+  box-shadow:0 10px 22px rgba(13,84,91,.16)
+}
+.next:hover{box-shadow:0 12px 28px rgba(13,84,91,.22)}
+.p2p{
+  position:relative;
+  overflow:hidden;
+  padding:17px;
+  margin-bottom:16px;
+  border:1px solid #cfe6df;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(13,122,114,.09),transparent 38%),
+    linear-gradient(145deg,#fff,#f5fbf9);
+  box-shadow:var(--shadow-soft)
+}
+.p2p-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.p2p-icon{
+  width:42px;height:42px;
+  border-radius:13px;
+  display:grid;place-items:center;
+  flex-shrink:0;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.2px;
+  background:linear-gradient(145deg,var(--navy),var(--teal));
+  box-shadow:0 8px 16px rgba(23,53,84,.16)
+}
+.p2p-title{font-size:14px;font-weight:880;color:#162234}
+.p2p-sub{font-size:10px;color:#718093;margin-top:3px}
+.p2p-status{
+  margin:10px 0;
+  padding:11px 12px;
+  border-radius:12px;
+  font-size:11px;
+  line-height:1.55
+}
+.p2p-ok{color:#145c48;background:#edf9f4;border:1px solid #cbeade}
+.p2p-warn{color:#845714;background:#fff8ea;border:1px solid #f0d9ab}
+.p2p-card{
+  margin-top:10px;
+  padding:12px;
+  border:1px solid #e2e8ef;
+  border-radius:12px;
+  background:rgba(255,255,255,.92)
+}
+.p2p-name{font-size:12px;font-weight:850;color:#17253a}
+.p2p-meta{font-size:10.5px;color:#6f7d8f;line-height:1.55;margin-top:4px}
+.p2p-btn{
+  display:inline-block;
+  margin-top:9px;
+  padding:9px 11px;
+  border-radius:9px;
+  color:#fff;
+  text-decoration:none;
+  font-size:10px;
+  font-weight:850;
+  background:linear-gradient(135deg,var(--teal),var(--teal-2))
+}
+.p2p-ojk{
+  display:inline-block;
+  margin-top:10px;
+  color:var(--navy);
+  font-size:10px;
+  font-weight:850;
+  text-decoration:none
+}
+.feature{display:flex;gap:9px;align-items:flex-start;margin-top:8px;font-size:11px;color:#566478}
+.feature b{color:var(--navy)}
+.warning,.core-note,.important,.error{
+  border-radius:13px;
+  padding:13px 14px;
+  font-size:11px;
+  line-height:1.6
+}
+.warning{background:#fff9ee;border:1px solid #ecd6aa;margin-bottom:16px}
+.core-note{background:#fff9ee;border:1px solid #ecd6aa;color:#7c571a;margin-bottom:13px}
+.important{background:#f7f9fb;border:1px solid #e1e7ed;color:#687689}
+.error{
+  margin:12px 0;
+  color:#9b3e43;
+  background:#fff4f4;
+  border:1px solid #efc5c7;
+  box-shadow:0 4px 14px rgba(155,62,67,.05)
+}
+.legend{font-size:10px;color:#708094;line-height:1.6;margin-top:8px}
+.improve{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:11px 0;
+  margin:0;
+  border-bottom:1px dashed #e5eaf0
+}
+.improve:last-child{border-bottom:0;padding-bottom:0}
+.num{
+  width:25px;height:25px;
+  display:grid;place-items:center;
+  flex-shrink:0;
+  color:#fff;
+  border-radius:8px;
+  font-size:10px;
+  font-weight:900;
+  background:linear-gradient(145deg,var(--navy),var(--teal))
+}
+.status-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:850
+}
+.chip-k0,.chip-r0{background:#fae7e8;color:#913b40}
+.chip-k1,.chip-r1{background:#fbefd4;color:#825410}
+.chip-k2,.chip-r2{background:#dff3eb;color:#126a4d}
+.chip-td{background:#e8edf2;color:#44546a}
+.footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:15px 28px 18px;
+  border-top:1px solid var(--line);
+  color:#8692a1;
+  background:#fbfcfd;
+  font-size:9.5px
+}
+.footer strong{color:#5e6b7b}
+@media (min-width:760px){
+  .body{padding:28px 34px 34px}
+  .head{padding:31px 34px 26px}
+  .topnav{margin:16px 28px 0}
+  .card{padding:17px}
+  .choice{min-width:165px}
+}
+@media (max-width:720px){
+  #root{padding:0}
+  .app{border-radius:0;border-left:0;border-right:0;box-shadow:none;min-height:100vh}
+  .head{padding:23px 18px 20px}
+  .title{font-size:23px}
+  .sub{font-size:11.5px}
+  .topnav{margin:10px 12px 0;top:6px}
+  .body{padding:18px 14px 22px}
+  .grid3{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .metric{min-height:auto}
+  .rbtn{min-width:47%}
+  .choice{min-width:100%}
+  .footer{padding:13px 14px 16px;flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important}
+}
+
+</style>
+</head>
+<body><div id="root"></div>
+<script>
+const DIMENSI=[
+{id:'1',nama:'Keberlangsungan Usaha',penjelasan:'Apakah usaha berjalan terus dan bisa memenuhi pesanan?',indikator:[{id:'1.1',nama:'Usaha berjalan rutin',pilihan:['Sering berhenti atau tidak tentu','Jalan tapi kadang berhenti','Jalan terus minimal 6 bulan']},{id:'1.2',nama:'Pesanan atau penjualan',pilihan:['Tidak tahu polanya','Naik turun tapi bisa dijelaskan','Cukup tetap atau bisa diprediksi']},{id:'1.3',nama:'Kemampuan melayani',pilihan:['Sering tidak bisa penuhi','Kadang terkendala','Umumnya bisa penuhi']}]},
+{id:'2',nama:'Pencatatan Keuangan',penjelasan:'Apakah uang usaha dicatat dan dipisah dari uang pribadi?',indikator:[{id:'2.1',nama:'Uang usaha terpisah',pilihan:['Campur dengan uang rumah tangga','Kadang dipisah kadang campur','Selalu dipisah lewat rekening/catatan']},{id:'2.2',nama:'Kebiasaan mencatat',pilihan:['Tidak pernah mencatat','Catat tapi tidak rutin','Catat rutin setiap hari/minggu']},{id:'2.3',nama:'Kelengkapan catatan',pilihan:['Utang, stok, biaya tidak tercatat','Sebagian saja yang dicatat','Semua yang penting sudah dicatat']}]},
+{id:'3',nama:'Kondisi Uang Kas',penjelasan:'Apakah pemasukan cukup untuk menutup pengeluaran?',indikator:[{id:'3.1',nama:'Bulan untung',pilihan:['Cuma 0–2 bulan dari 6 bulan terakhir','Sekitar 3–4 bulan','Hampir semua: 5–6 bulan']},{id:'3.2',nama:'Bayar tagihan tepat waktu',pilihan:['Sering telat bayar','Kadang-kadang telat','Umumnya tepat waktu']},{id:'3.3',nama:'Tahu posisi uang',pilihan:['Tidak bisa perkirakan','Kira-kira saja','Bisa jelaskan dari catatan']}]},
+{id:'4',nama:'Kejelasan Kebutuhan Dana',penjelasan:'Apakah tujuan dana, objek kebutuhan, dasar jumlah, pemasok, dan jadwal sudah jelas?',indikator:[{id:'4.1',nama:'Tujuan dan barang/jasa',pilihan:['Belum jelas mau buat apa','Ada tujuan tapi barangnya belum rinci','Jelas: mau beli apa, untuk apa']},{id:'4.2',nama:'Dasar hitung jumlah dana',pilihan:['Asal tebak saja','Ada perkiraan tapi belum lengkap','Ada daftar harga dan rincian biaya']},{id:'4.3',nama:'Pemasok dan jadwal',pilihan:['Belum tahu dari siapa dan kapan','Sebagian bisa dijelaskan','Tahu pemasoknya, jadwalnya, dan ada bukti awal']}]},
+{id:'5',nama:'Legalitas dan Syariah',penjelasan:'Apakah legalitas dasar dan aspek usaha yang relevan dengan prinsip syariah sudah dapat dijelaskan?',indikator:[{id:'5.1',nama:'Surat izin usaha',pilihan:['Belum punya','Sedang proses / sebagian ada','Sudah lengkap']},{id:'5.2',nama:'Izin khusus (halal dll.)',pilihan:['Belum punya padahal perlu','Sedang proses','Sudah punya atau memang tidak perlu']},{id:'5.3',nama:'Kesesuaian usaha dengan prinsip syariah',pilihan:['Ada hal yang belum jelas/berisiko','Secara umum sesuai tapi perlu dicek','Dapat dijelaskan secara memadai untuk tahap awal']}]},
+{id:'6',nama:'Kesiapan Digital',penjelasan:'Bisakah mengisi formulir, mengirim berkas, membaca perjanjian, dan memantau kewajiban lewat perangkat digital?',indikator:[{id:'6.1',nama:'Mengisi dan kirim berkas',pilihan:['Tidak bisa sama sekali','Bisa tapi perlu dibantu','Bisa sendiri']},{id:'6.2',nama:'Paham perjanjian digital',pilihan:['Tidak paham apa itu','Tahu fungsinya tapi belum detail','Paham apa yang harus dibaca sebelum setuju']},{id:'6.3',nama:'Pantau kewajiban sendiri',pilihan:['Tidak punya cara pantau','Mengandalkan pengingat orang lain','Punya catatan/pengingat sendiri']}]},
+{id:'7',nama:'Literasi Biaya, Risiko, dan Data',penjelasan:'Apakah memahami komponen biaya, risiko pembiayaan, dan keamanan data?',indikator:[{id:'7.1',nama:'Paham komponen biaya',pilihan:['Tidak tahu ada biaya apa saja','Tahu sebagian','Paham komponen biaya yang perlu diperiksa']},{id:'7.2',nama:'Paham risiko',pilihan:['Merasa pasti diterima/aman','Tahu ada risiko secara umum','Paham bisa ditolak dan keterlambatan punya konsekuensi']},{id:'7.3',nama:'Jaga data pribadi',pilihan:['Memberikan semua data tanpa pertimbangan','Tahu sebagian data yang sensitif','Paham data mana yang layak dibagikan dan dilindungi']}]}
+];
+
+const BUKTI=[
+{id:'B01',nama:'Buku kas atau catatan keuangan',jenis:'umum'},
+{id:'B02',nama:'Nota jual/beli',jenis:'umum'},
+{id:'B03',nama:'Catatan utang dan piutang',jenis:'umum'},
+{id:'B04',nama:'Catatan stok barang',jenis:'umum'},
+{id:'B05',nama:'Rekening khusus usaha',jenis:'umum'},
+{id:'B06',nama:'Rincian biaya atau harga pokok',jenis:'inti'},
+{id:'B07',nama:'Penawaran pemasok',jenis:'inti'},
+{id:'B08',nama:'Surat pesanan atau perjanjian',jenis:'inti'},
+{id:'B09',nama:'NIB atau surat izin usaha',jenis:'umum'},
+{id:'B10',nama:'Sertifikat halal atau izin khusus',jenis:'pelengkap'},
+{id:'B11',nama:'Berkas digital yang tertata',jenis:'umum'},
+{id:'B12',nama:'Riwayat penggunaan/pendaftaran aplikasi pembiayaan',jenis:'umum'}
+];
+
+const CORE_IDS=['B06','B07','B08'];
+const CORE_NAME=Object.fromEntries(BUKTI.filter(b=>CORE_IDS.includes(b.id)).map(b=>[b.id,b.nama]));
+const TIE_ORDER=['5','3','2','4','6','7']; // mengikuti urutan tie-break paper; F1 dipakai sebagai fallback alami bila diperlukan.
+
+const DIAGNOSIS_STYLE={
+  good:{nama:'Kesiapan Operasional Tinggi dan Bukti Andal',warna:'#059669',latar:'#ecfdf5',ikon:'✓'},
+  warn:{nama:'Kesiapan Operasional Tinggi, Bukti Belum Memadai',warna:'#d97706',latar:'#fffbeb',ikon:'⚠'},
+  lowgood:{nama:'Bukti Memadai, Kesiapan Operasional Perlu Diperkuat',warna:'#2563eb',latar:'#eff6ff',ikon:'◐'},
+  lowbad:{nama:'Kesiapan Dasar dan Bukti Perlu Diperkuat',warna:'#dc2626',latar:'#fef2f2',ikon:'✗'},
+  trans:{nama:'Kesiapan Operasional pada Zona Transisi',warna:'#7c3aed',latar:'#f5f3ff',ikon:'↔'},
+  td:{nama:'Belum Dapat Dipetakan — Sumbu Y = TD',warna:'#475569',latar:'#f1f5f9',ikon:'…'}
+};
+
+const P2P_REF=[{nama:'Dana Syariah Indonesia',badan:'PT Dana Syariah Indonesia',fokus:'Contoh kanal pembiayaan berbasis syariah. Penyelenggara tetap melakukan asesmen dan keputusan secara mandiri.',url:'https://www.danasyariah.id/'}];
+
+let lk=0,kode='UMKM-01',sk={},bk={},page='mizan',errorMsg='';
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function labelBukti(b){if(b.jenis==='inti')return '<span class="label label-core">BUKTI INTI AKAD</span>';if(b.jenis==='pelengkap')return '<span class="label label-support">BUKTI PELENGKAP</span>';return '<span class="label label-U">SYARAT UMUM</span>'}
+function klasifikasiX(x){if(x<=20)return{kode:'K0',rentang:'0–20',status:'Fondasi tata kelola perlu diperkuat',warna:'#dc2626'};if(x<=25)return{kode:'K1',rentang:'21–25',status:'Mendekati ambang operasional',warna:'#d97706'};return{kode:'K2',rentang:'26–42',status:'Kesiapan operasional relatif memadai',warna:'#059669'}}
+
+function agregasiY(){
+  const vals=CORE_IDS.map(id=>bk[id]||'TD');
+  if(vals.includes('TD'))return 'TD';
+  if(vals.includes('R0'))return 'R0';
+  if(vals.includes('R1'))return 'R1';
+  return 'R2';
+}
+
+function statusGerbang(y){return y==='R2'?{kode:'DIBUKA',judul:'Dapat dilanjutkan ke konsultasi awal akad',warna:'#059669',latar:'#ecfdf5',ket:'B06, B07, dan B08 seluruhnya mencapai R2. Status ini hanya menunjukkan kecukupan dokumentasi awal menurut Model 0.1.'}:{kode:'DITAHAN',judul:'Ditahan untuk pemenuhan atau verifikasi bukti',warna:'#dc2626',latar:'#fef2f2',ket:'Gerbang belum dibuka karena B06–B08 belum seluruhnya mencapai R2. Ini bukan keputusan kelayakan atau persetujuan pembiayaan.'}}
+
+function diagnosis(xClass,y){
+  if(y==='TD')return DIAGNOSIS_STYLE.td;
+  const andal=y==='R2';
+  if(xClass.kode==='K1')return {...DIAGNOSIS_STYLE.trans,nama:`Kesiapan Operasional K1 (Transisi), Bukti ${andal?'Andal':'Belum Memadai'}`};
+  if(xClass.kode==='K2')return andal?DIAGNOSIS_STYLE.good:DIAGNOSIS_STYLE.warn;
+  return andal?DIAGNOSIS_STYLE.lowgood:DIAGNOSIS_STYLE.lowbad;
+}
+
+function pilihDimensiPrioritas(ds,limit=2){
+  const tieRank=id=>{const i=TIE_ORDER.indexOf(id);return i>=0?i:999};
+  return [...ds].sort((a,b)=>a.nilai-b.nilai||tieRank(a.id)-tieRank(b.id)||Number(a.id)-Number(b.id)).slice(0,limit);
+}
+
+function rekomendasiBukti(){
+  const state=Object.fromEntries(CORE_IDS.map(id=>[id,bk[id]||'TD']));
+  const td=CORE_IDS.filter(id=>state[id]==='TD');
+  if(td.length)return{judul:'Gali dan siapkan bukti Syarat Akad inti',detail:`Belum dapat dinilai: ${td.map(id=>`${id} ${CORE_NAME[id]}`).join(', ')}. Lakukan penggalian/verifikasi dokumen sebelum gerbang dapat dinilai.`};
+  const r0=CORE_IDS.filter(id=>state[id]==='R0');
+  if(r0.length)return{judul:'Lengkapi bukti inti yang belum tersedia',detail:`Prioritaskan ${r0.map(id=>`${id} ${CORE_NAME[id]}`).join(', ')} agar bukti dapat bergerak dari R0 menuju bukti yang lebih memadai.`};
+  const r1=CORE_IDS.filter(id=>state[id]==='R1');
+  if(r1.length)return{judul:'Perlihatkan dan rapikan dokumen pendukung',detail:`Informasi sudah spesifik tetapi dokumen belum memadai pada ${r1.map(id=>`${id} ${CORE_NAME[id]}`).join(', ')}. Lengkapi dokumen agar dapat ditelusuri.`};
+  return null;
+}
+
+function hitung(){
+  let tX=0;
+  const ds=DIMENSI.map(d=>{let nilai=0;d.indikator.forEach(i=>nilai+=(sk[i.id]??0));tX+=nilai;return{...d,nilai,pct:Math.round((nilai/6)*100)}});
+  const xClass=klasifikasiX(tX);
+  const y=agregasiY();
+  const gate=statusGerbang(y);
+  const diag=diagnosis(xClass,y);
+  const prioritas=[];
+  const pBukti=rekomendasiBukti();
+  if(pBukti)prioritas.push(pBukti);
+  const slot=2-prioritas.length;
+  if(slot>0){pilihDimensiPrioritas(ds,slot).forEach(d=>prioritas.push({judul:`Perkuat ${d.nama}`,detail:`Nilai ${d.nilai}/6. Fokus pada: ${d.indikator.filter(i=>(sk[i.id]??0)<2).map(i=>i.nama).join(', ')||'pertahankan konsistensi praktik yang sudah baik'}.`}))}
+  const siapRujuk=xClass.kode==='K2'&&y==='R2';
+  return{tX,ds,xClass,y,gate,diag,prioritas,siapRujuk};
+}
+
+function validateCurrentStep(){
+  errorMsg='';
+  if(lk>=1&&lk<=7){const d=DIMENSI[lk-1];const kosong=d.indikator.filter(i=>sk[i.id]===undefined);if(kosong.length){errorMsg='Lengkapi seluruh butir pada bagian ini sebelum melanjutkan.';return false}}
+  if(lk===8){
+    const umum=BUKTI.filter(b=>b.jenis!=='inti'&&bk[b.id]===undefined);
+    const inti=BUKTI.filter(b=>b.jenis==='inti'&&bk[b.id]===undefined);
+    if(umum.length||inti.length){errorMsg='Tentukan status seluruh bukti. Untuk B06–B08, pilih TD bila item memang belum digali atau belum dapat dinilai.';return false}
+  }
+  return true;
+}
+
+function renderP2P(h){
+  if(h.siapRujuk){return `<div class="p2p"><div class="p2p-head"><div class="p2p-icon">P2P</div><div><div class="p2p-title">Tahap Rujukan LPBBTI Syariah</div><div class="p2p-sub">Hanya setelah K2 dan B06–B08 = R2</div></div></div><div class="p2p-status p2p-ok"><strong>Dapat masuk tahap rujukan awal.</strong><br>Kesiapan operasional berada pada K2 dan Gerbang Kecukupan Bukti Awal telah dibuka. Penyelenggara tetap melakukan penilaian resmi sendiri; MIZAN tidak menyetujui pembiayaan.</div><div class="p2p-card"><div class="p2p-name">${P2P_REF[0].nama}</div><div class="p2p-meta">${P2P_REF[0].badan}<br>${P2P_REF[0].fokus}</div><a class="p2p-btn" href="${P2P_REF[0].url}" target="_blank" rel="noopener noreferrer">Buka Kanal Resmi →</a></div><a class="p2p-ojk" href="https://ojk.go.id/id/kanal/iknb/data-dan-statistik/direktori/fintech/default.aspx" target="_blank" rel="noopener noreferrer">Cek Direktori LPBBTI OJK →</a></div>`}
+  let alasan='';
+  if(h.xClass.kode!=='K2'&&h.y!=='R2')alasan='Kesiapan operasional belum mencapai K2 dan bukti inti akad belum seluruhnya R2.';
+  else if(h.xClass.kode!=='K2')alasan='Bukti inti sudah memadai, tetapi kesiapan operasional belum mencapai K2.';
+  else alasan='Kesiapan operasional sudah K2, tetapi Gerbang Kecukupan Bukti Awal masih ditahan.';
+  return `<div class="p2p"><div class="p2p-head"><div class="p2p-icon">P2P</div><div><div class="p2p-title">Tahap Rujukan LPBBTI Syariah</div><div class="p2p-sub">MIZAN sebagai pra-screening, bukan persetujuan</div></div></div><div class="p2p-status p2p-warn"><strong>Belum diarahkan ke penyelenggara.</strong><br>${alasan}</div><div class="p2p-card"><div class="p2p-name">Mengapa belum dirujuk?</div><div class="p2p-meta">Model memisahkan kesiapan operasional (Sumbu X) dari keandalan bukti Syarat Akad (Sumbu Y). Rujukan awal hanya ditampilkan ketika keduanya telah memenuhi kondisi Model 0.1.</div></div><a class="p2p-ojk" href="https://ojk.go.id/id/kanal/iknb/financial-technology/default.aspx" target="_blank" rel="noopener noreferrer">Lihat informasi LPBBTI OJK →</a></div>`;
+}
+
+function renderP2PPage(){return `<div class="p2p"><div class="p2p-head"><div class="p2p-icon">P2P</div><div><div class="p2p-title">Ekosistem P2P Syariah</div><div class="p2p-sub">Rujukan tahap berikutnya, bukan keputusan pembiayaan</div></div></div><div class="p2p-status p2p-ok"><strong>Fungsi halaman ini</strong><br>MIZAN membantu UMKM memeriksa kesiapan pra-pengajuan. Keputusan pembiayaan, penilaian risiko, dan penetapan akad tetap dilakukan oleh penyelenggara resmi serta pihak pengawasan syariah yang berwenang.</div><div class="p2p-card"><div class="p2p-name">Alur MIZAN → rujukan</div><div class="feature"><b>1.</b><span>Nilai 21 butir membentuk Sumbu X (0–42) dan status K0/K1/K2.</span></div><div class="feature"><b>2.</b><span>B06–B08 membentuk Sumbu Y (TD/R0/R1/R2) dan Gerbang Kecukupan Bukti Awal.</span></div><div class="feature"><b>3.</b><span>Rujukan awal ditampilkan ketika status operasional K2 dan B06–B08 seluruhnya R2.</span></div></div><div class="p2p-card"><div class="p2p-name">Contoh penyelenggara untuk dicek</div><div class="p2p-meta">Gunakan hanya sebagai pintu menuju kanal resmi. Status dan produk penyelenggara perlu dicek kembali pada sumber resmi.</div><div class="p2p-card"><div class="p2p-name">Dana Syariah Indonesia</div><div class="p2p-meta">PT Dana Syariah Indonesia</div><a class="p2p-btn" href="https://www.danasyariah.id/" target="_blank" rel="noopener noreferrer">Buka Kanal Resmi →</a></div><a class="p2p-ojk" href="https://ojk.go.id/id/kanal/iknb/data-dan-statistik/direktori/fintech/default.aspx" target="_blank" rel="noopener noreferrer">Cek Direktori LPBBTI OJK →</a></div><div class="p2p-status p2p-warn"><strong>Catatan penelitian</strong><br>Prototype Model 0.1 tidak mengirim data UMKM, tidak melakukan credit scoring, tidak menentukan akad final, dan tidak mengajukan pembiayaan secara otomatis.</div></div>`}
+
+function renderEvidenceButtons(b){
+  if(b.jenis==='inti'){
+    const opts=[['TD','Belum digali','Item belum digali / belum dapat dinilai'],['R0','Belum ada bukti','Tidak tersedia atau masih berupa klaim umum'],['R1','Informasi ada','Spesifik & konsisten, dokumen belum diperlihatkan'],['R2','Dokumen memadai','Dokumen diperlihatkan dan dapat ditelusuri']];
+    return opts.map(([r,short,desc])=>`<button class="rbtn ${r.toLowerCase()} ${bk[b.id]===r?'on':''}" data-bukti="${b.id}|${r}" title="${esc(desc)}"><div style="font-weight:800">${r}</div><div>${short}</div></button>`).join('');
+  }
+  const opts=[['E0','Tidak ada'],['E1','Ada sebagian'],['E2','Lengkap/tertata']];
+  return opts.map(([r,short])=>`<button class="rbtn ${r.toLowerCase()} ${bk[b.id]===r?'on':''}" data-bukti="${b.id}|${r}"><div style="font-weight:800">${r.replace('E','')}</div><div>${short}</div></button>`).join('');
+}
+
+function renderFooter(){return `<div class="footer"><span><strong>MIZAN-MOJO P2P</strong> · Model Diagnostik 0.1</span><span>Prototype Penelitian · Ruang Gagasan</span></div>`}
+
+function render(){
+  if(page==='p2p'){
+    document.getElementById('root').innerHTML=`<div class="app"><div class="head"><div class="brand">MIZAN-MOJO P2P · MODEL 0.1</div><div class="title">Ekosistem P2P Syariah</div><div class="sub">Rujukan tahap berikutnya untuk UMKM</div></div><div class="topnav"><button class="tab" id="mizanTab">MIZAN Check</button><button class="tab active">P2P Syariah</button></div><div class="body">${renderP2PPage()}</div>${renderFooter()}</div>`;
+    document.getElementById('mizanTab').onclick=()=>{page='mizan';render()};return;
+  }
+  const dl=['Mulai',...DIMENSI.map(d=>d.id),'Bukti','Hasil'];
+  const dim=lk>=1&&lk<=7?DIMENSI[lk-1]:null;
+  const pr=Math.round((lk/(dl.length-1))*100);
+  let main='';
+  if(lk===0){main=`<h3 class="section-title">Mulai Pemeriksaan</h3><div class="section-help">Pilih kode kasus demonstrasi, lalu isi penilaian secara berurutan hingga hasil diagnostik.</div><div style="font-size:10px;font-weight:850;color:#7a8797;letter-spacing:.65px;text-transform:uppercase;margin:4px 0 7px">Kode Kasus / UMKM</div><select id="kodeSelect" style="width:100%;padding:13px 14px;border-radius:12px;border:1px solid #d8e0e8;font-size:14px;font-weight:750;margin-bottom:16px">${['UMKM-01','UMKM-02','UMKM-03','UMKM-04','UMKM-05'].map(c=>`<option ${c===kode?'selected':''}>${c}</option>`).join('')}</select><div class="note note-blue"><strong>Perlu diketahui:</strong> MIZAN-MOJO P2P adalah alat diagnostik pra-pengajuan. Hasilnya bukan keputusan diterima/ditolak dan bukan sertifikasi kepatuhan syariah.</div><div class="note note-green"><strong>Dua konstruk diperiksa terpisah:</strong><div style="margin-top:6px">① <strong>Sumbu X — Kesiapan Operasional</strong>: 7 dimensi, 21 butir, skor 0–42.</div><div style="margin-top:4px">② <strong>Sumbu Y — Keandalan Bukti Syarat Akad</strong>: B06–B08 dengan TD/R0/R1/R2.</div></div><div class="note note-amber"><strong>Cakupan Model 0.1:</strong> operasionalisasi bukti inti Sumbu Y difokuskan pada konteks awal pembiayaan berbasis murabahah. Model tidak menentukan akad final.</div>`}
+  if(dim){main=`<div style="margin-bottom:6px"><h3 class="section-title">Bagian ${dim.id}: ${dim.nama}</h3><div class="section-help">${dim.penjelasan}</div></div>${dim.indikator.map((ind,idx)=>`<div class="card"><div class="row"><span style="font-size:13px;font-weight:600">${idx+1}. ${ind.nama}</span></div><div class="btn-row">${[0,1,2].map(v=>`<button class="choice b${v} ${sk[ind.id]===v?'on':''}" data-score="${ind.id}|${v}"><div style="font-weight:800;font-size:14px">${v}</div><div>${ind.pilihan[v]}</div></button>`).join('')}</div></div>`).join('')}<div class="summary">Nilai bagian ini: <strong>${dim.indikator.reduce((s,i)=>s+(sk[i.id]??0),0)}</strong> dari 6</div>`}
+  if(lk===8){main=`<h3 class="section-title" style="font-size:15px;margin-bottom:4px">Pemeriksaan Bukti Dokumen</h3><p class="section-help">Bukti umum dipakai sebagai informasi pendukung. <strong>Hanya B06–B08</strong> yang membentuk Sumbu Y dan Gerbang Kecukupan Bukti Awal pada Model 0.1.</p><div class="core-note"><strong>Definisi bukti inti:</strong> TD = belum digali; R0 = tidak tersedia/klaim umum; R1 = informasi spesifik dan konsisten tetapi dokumen belum diperlihatkan; R2 = dokumen memadai dan dapat ditelusuri.</div>${BUKTI.map(b=>`<div class="card ${b.jenis==='inti'?'core':b.jenis==='pelengkap'?'support':''}" style="margin-bottom:8px"><div class="pillline"><span style="font-size:12px;font-weight:800">${b.id}</span>${labelBukti(b)}<span style="font-size:12px">${b.nama}</span></div><div class="btn-row">${renderEvidenceButtons(b)}</div></div>`).join('')}`}
+  if(lk===9){
+    const h=hitung();
+    const yColor={TD:'#475569',R0:'#dc2626',R1:'#d97706',R2:'#059669'}[h.y];
+    main=`<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:13px"><div><div style="font-size:9px;font-weight:850;letter-spacing:.8px;text-transform:uppercase;color:#8a96a5;margin-bottom:4px">Ringkasan Analisis</div><h3 class="section-title" style="margin:0!important">Hasil Diagnostik</h3></div><span class="status-chip chip-td">${esc(kode)}</span></div><div class="result" style="background:${h.diag.latar};border:2px solid ${h.diag.warna}"><div class="result-icon">${h.diag.ikon}</div><div class="result-name" style="color:${h.diag.warna}">${h.diag.nama}</div><div class="result-text">Diagnosis menggabungkan Sumbu X dan Sumbu Y sesuai aturan Model 0.1.</div></div><div class="grid3"><div class="metric"><div class="metric-label">SUMBU X</div><div class="metric-val" style="color:${h.xClass.warna}">${h.tX}</div><div class="small"><span class="status-chip chip-${h.xClass.kode.toLowerCase()}">${h.xClass.kode}</span><br>${h.xClass.status}</div></div><div class="metric"><div class="metric-label">SUMBU Y</div><div class="metric-val" style="color:${yColor}">${h.y}</div><div class="small">Agregasi B06–B08</div></div><div class="metric"><div class="metric-label">GERBANG BUKTI</div><div class="metric-val" style="font-size:17px;color:${h.gate.warna}">${h.gate.kode}</div><div class="small">${h.gate.judul}</div></div></div><div class="card" style="border-left:4px solid ${h.gate.warna}"><div class="metric-label" style="margin-bottom:4px">STATUS GERBANG KECUKUPAN BUKTI AWAL</div><div style="font-size:15px;font-weight:800;color:${h.gate.warna}">${h.gate.judul}</div><div style="font-size:12px;color:#4b5563;margin-top:5px;line-height:1.5">${h.gate.ket}</div></div>`+renderP2P(h);
+    main+=`<div class="card" style="margin-bottom:16px"><div class="metric-label" style="margin-bottom:8px">NILAI TUJUH DIMENSI SUMBU X</div>${h.ds.map(d=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">${d.id}. ${d.nama}</span><span style="font-weight:800">${d.nilai}/6</span></div><div class="bar-bg"><div class="bar" style="width:${d.pct}%;background:${d.pct>=67?'#059669':d.pct>=34?'#d97706':'#dc2626'}"></div></div></div>`).join('')}</div><div class="card" style="margin-bottom:16px"><div class="metric-label" style="margin-bottom:10px">MAKSIMAL DUA PRIORITAS PERBAIKAN</div>${h.prioritas.map((p,i)=>`<div class="improve"><div class="num">${i+1}</div><div><div style="font-size:13px;font-weight:800">${p.judul}</div><div style="font-size:11px;color:#6b7280;line-height:1.5;margin-top:2px">${p.detail}</div></div></div>`).join('')}</div><div class="warning"><div style="font-size:11px;color:#92400e;margin-bottom:6px;font-weight:800">BATAS INTERPRETASI MODEL 0.1</div><div style="font-size:12px;line-height:1.55">Status K0/K1/K2 dan ambang 26 merupakan aturan desain provisional, bukan standar regulator. Gerbang bukti bukan persetujuan pembiayaan dan bukan penetapan sah/tidaknya akad.</div></div><div class="important"><strong>Keterangan penting:</strong> Model ini adalah alat bantu diagnosis pra-pengajuan. Validasi ahli eksternal, uji kegunaan, dan kalibrasi ambang merupakan agenda pengembangan menuju Model 1.0.</div>`
+  }
+  if(errorMsg)main+=`<div class="error">${esc(errorMsg)}</div>`;
+  const nav=lk>0?`<button id="backBtn" class="action back">← Kembali</button>`:'';
+  const next=lk<dl.length-1?`<button id="nextBtn" class="action next">${lk===0?'Mulai Periksa →':lk===8?'Lihat Hasil →':'Lanjut →'}</button>`:`<button id="repeatBtn" class="action repeat">Periksa Ulang</button>`;
+  document.getElementById('root').innerHTML=`<div class="app"><div class="head"><div class="brand">MIZAN-MOJO P2P · MODEL 0.1</div><div class="title">Cek Kesiapan Pra-Pengajuan Pembiayaan Syariah</div><div class="sub">Untuk demonstrasi UMKM Kota Mojokerto</div><div class="track"><div class="fill" style="width:${pr}%"></div></div><div class="step">Langkah ${lk+1} dari ${dl.length}</div></div><div class="topnav"><button class="tab active">MIZAN Check</button><button class="tab" id="p2pTab">P2P Syariah</button></div><div class="body">${main}<div class="actions">${nav}${next}</div></div>${renderFooter()}</div>`;
+  const ks=document.getElementById('kodeSelect');if(ks)ks.onchange=e=>{kode=e.target.value};
+  const back=document.getElementById('backBtn');if(back)back.onclick=()=>{errorMsg='';lk--;render()};
+  const nextBtn=document.getElementById('nextBtn');if(nextBtn)nextBtn.onclick=()=>{if(validateCurrentStep()){lk++;errorMsg=''}render()};
+  const repeat=document.getElementById('repeatBtn');if(repeat)repeat.onclick=()=>{lk=0;sk={};bk={};errorMsg='';render()};
+  const p2pTab=document.getElementById('p2pTab');if(p2pTab)p2pTab.onclick=()=>{page='p2p';render()};
+  document.querySelectorAll('[data-score]').forEach(b=>b.onclick=()=>{const[a,v]=b.dataset.score.split('|');sk[a]=Number(v);errorMsg='';render()});
+  document.querySelectorAll('[data-bukti]').forEach(b=>b.onclick=()=>{const[a,v]=b.dataset.bukti.split('|');bk[a]=v;errorMsg='';render()});
+}
+render();
+</script>
+</body>
+</html>
